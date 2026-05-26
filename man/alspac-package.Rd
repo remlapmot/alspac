@@ -9,12 +9,14 @@
 Functions to search and extract variables based on keywords from the ALSPAC data dictionary.
 }
 \author{
-\strong{Maintainer}: Gibran Hemani \email{g.hemani@bristol.ac.uk}
+\strong{Maintainer}: Matt Hardcastle \email{matthew.hardcastle@bristol.ac.uk}
 
 Authors:
 \itemize{
+  \item Matt Hardcastle \email{matthew.hardcastle@bristol.ac.uk}
   \item Gibran Hemani \email{g.hemani@bristol.ac.uk}
   \item Matthew Suderman \email{matt.suderman@bristol.ac.uk}
+  \item Tom Palmer \email{remlapmot@hotmail.com}
 }
 
 }
