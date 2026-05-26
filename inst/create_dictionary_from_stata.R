@@ -17,5 +17,5 @@ current <- createDictionary("Current", name="current")
 # useful <- createDictionary("Useful_data", name="useful")
 ## 5s with 10 cores
 
-save(current, file="../data/current.rdata")
-# save(useful, file="../data/useful.rdata")
+save(current, file="../data/current.rda", compress="xz")
+# save(useful, file="../data/useful.rda", compress="xz")

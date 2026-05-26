@@ -11,11 +11,11 @@ filterVars(x, ...)
 
 \item{...}{Filter terms.  The name corresponds to the variable
 name for which to remove duplicates.  Each term is a named vector
-whose names correspond to columns in `x`.
+whose names correspond to columns in \code{x}.
 The values provide patterns for the given column to match.}
 }
 \value{
-The subset of `x` that satisfies the supplied filters
+The subset of \code{x} that satisfies the supplied filters
 or that were not provided a filter.
 }
 \description{

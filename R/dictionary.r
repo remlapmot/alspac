@@ -1,69 +1,62 @@
-  loadDictionaries <- function() {        
-    path <- file.path(system.file(package = "alspac"), "data")
-    
-    # Initialize globals in the global environment
-    if (!exists("globals")) {
-      assign("globals", new.env(), envir = .GlobalEnv)
-    }
-    
-    for (file in list.files(path, "rdata$", full.names = TRUE))
-      load(file, globals)
-    combineDictionaries()
-    checkDictionaries()
+globals <- new.env(parent = emptyenv())
+
+loadDictionaries <- function() {
+  utils::data("current", envir = globals, package = "alspac")
+
+  cache_dir <- tools::R_user_dir("alspac", "cache")
+  for (nm in c("current", "custom")) {
+    f <- file.path(cache_dir, paste0(nm, ".rdata"))
+    if (file.exists(f)) load(f, envir = globals)
   }
+
+  combineDictionaries()
+  checkDictionaries()
+}
 
 
 combineDictionaries <- function() {
-  both <- NULL
-  
-  # Check if "current" exists
-  if (exists("current", envir=globals)) {
-    both <- retrieveDictionary("current")
-  } else {
-    # Handle the case when "current" doesn't exist
-    warning("Dictionary 'current' does not exist. Please run 'updateDictionaries()' to create it.")
+  if (!exists("current", envir = globals)) {
+    packageStartupMessage("Dictionary 'current' does not exist. Please run 'updateDictionaries()' to create it.")
     return(NULL)
-  }  
-  
-  # Check if "custom" exists
-  if (exists("custom", envir=globals)) {
-    custom <- retrieveDictionary("custom")
-    both <- plyr::rbind.fill(both, custom)
-    assign("both", both, globals)
-  } else {
-    warning("Dictionary 'custom' does not exist.")
   }
+
+  both <- retrieveDictionary("current")
+  if (exists("custom", envir = globals)) {
+    both <- plyr::rbind.fill(both, retrieveDictionary("custom"))
+  }
+  assign("both", both, envir = globals)
 }
 
 
 retrieveDictionary <- function(name) {
-  if (name %in% ls(envir = globals)) {
-    get(name, envir = globals)
-  } else {
-    # Try loading from package /data folder
-    path <- system.file("data", paste0(name, ".rdata"), package = "alspac")
-    if (file.exists(path)) {
-      load(path, envir = globals)
-      get(name, envir = globals)
-    } else {
-      stop("dictionary '", name, "' does not exist")
-    }
+  if (name %in% ls(envir = globals))
+    return(get(name, envir = globals))
+
+  cache_file <- file.path(tools::R_user_dir("alspac", "cache"),
+                          paste0(name, ".rdata"))
+  if (file.exists(cache_file)) {
+    load(cache_file, envir = globals)
+    return(get(name, envir = globals))
   }
+
+  ns <- asNamespace("alspac")
+  if (exists(name, envir = ns, inherits = FALSE)) {
+    val <- get(name, envir = ns)
+    assign(name, val, envir = globals)
+    return(val)
+  }
+
+  stop("dictionary '", name, "' does not exist")
 }
 
 
 saveDictionary <- function(name, dictionary) {
-  assign(name, dictionary, globals)
-  #if (name == "current" || name == "useful")
-  #    combineDictionaries()
-  
-  path <- file.path(system.file(package="alspac"), "data")
-  if (!file.exists(path)) {
-    dir.create(path)
-  }
-  save(list=name,
-       file=file.path(path, paste(name, "rdata", sep=".")),
-       envir=globals)
+  assign(name, dictionary, envir = globals)
+  cache_dir <- tools::R_user_dir("alspac", "cache")
+  dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
+  save(list = name,
+       file = file.path(cache_dir, paste0(name, ".rdata")),
+       envir = globals)
 }
 
 
@@ -273,47 +266,34 @@ checkDictionaries <- function() {
   columns_to_check <- c("mother", "mother_clinic", "mother_quest", "partner_quest","partner_clinic", "partner", "child_based",
                         "child_completed")
   
-  globals <- get("globals", envir = .GlobalEnv) #Get the environment
-  dict_names <- ls(envir = globals) # List all dictionary names
-  
-  if(length(dict_names)== 0){
-    message("No dictionaries found in the library.")
+  dict_names <- ls(envir = globals)
+
+  if (length(dict_names) == 0) {
+    packageStartupMessage("No dictionaries found in the library.")
     return(NULL)
   }
-  
+
   for (dict_name in dict_names) {
-    dict <-get(dict_name, envir = globals) #Retrieve a dictionary
-    #Flag to track if any missing values were found in any column
+    dict <- get(dict_name, envir = globals)
     missing_found <- FALSE
-    
-  
-    # Iterate through each dictionary
-    for (dict_name in dict_names) {
-      dict <- get(dict_name, envir = globals)  # Retrieve the dictionary
-      
-      # Flag to check if any missing values are found
-      missing_found <- FALSE
-      
-      # Iterate over the specific hard-coded columns to check
-      for (col in columns_to_check) {
-        # Check if the column exists in the dictionary
-        if (col %in% colnames(dict)) {
-          # Check for missing values in the column
-          num_NA <- sum(is.na(dict[[col]]))  
-          
-          if (num_NA > 0) {
-            cat(sprintf("Dictionary '%s' has %d missing values in column '%s'.\n", dict_name, num_NA, col))
-            missing_found <- TRUE
-          }
-        } else {
-          cat(sprintf("Column '%s' not found in dictionary '%s'.\n", col, dict_name))
+
+    for (col in columns_to_check) {
+      if (col %in% colnames(dict)) {
+        num_NA <- sum(is.na(dict[[col]]))
+        if (num_NA > 0) {
+          packageStartupMessage(sprintf("Dictionary '%s' has %d missing values in column '%s'.",
+                          dict_name, num_NA, col))
+          missing_found <- TRUE
         }
+      } else {
+        packageStartupMessage(sprintf("Column '%s' not found in dictionary '%s'.",
+                        col, dict_name))
       }
-      
-      # If no missing values were found, print this message once per dictionary
-      if (!missing_found) {
-        cat(sprintf("Dictionary '%s' has no missing values in the Withdrawal of Consent logic columns.\n", dict_name))
-      }
+    }
+
+    if (!missing_found) {
+      packageStartupMessage(sprintf("Dictionary '%s' has no missing values in the Withdrawal of Consent logic columns.",
+                      dict_name))
     }
   }
 }

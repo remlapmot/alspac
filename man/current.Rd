@@ -5,28 +5,31 @@
 \alias{current}
 \title{Current data}
 \format{
-## `current`
-A data frame with 87,248 rows and 19 columns:
+\subsection{\code{current}}{
+
+A data frame with 98,369 rows and 20 columns:
 \describe{
-  \item{obj}{Stata dataset name}
-  \item{name}{variable name}
-  \item{lab}{}
-  \item{type}{}
-  \item{counts}{}
-  \item{cat1}{}
-  \item{cat2}{}
-  \item{cat3}{}
-  \item{cat4}{}
-  \item{path}{}
-  \item{cat5}{}
-  \item{mother}{}
-  \item{mother_clinic}{}
-  \item{mother_quest}{}
-  \item{partner_quest}{}
-  \item{partner_clinic}{}
-  \item{partner}{}
-  \item{child_based}{}
-  \item{child_completed}{}
+\item{obj}{Stata dataset name}
+\item{name}{variable name}
+\item{lab}{}
+\item{type}{}
+\item{counts}{}
+\item{cat1}{}
+\item{cat2}{}
+\item{cat3}{}
+\item{cat4}{}
+\item{cat5}{}
+\item{path}{}
+\item{cat6}{}
+\item{mother}{}
+\item{mother_clinic}{}
+\item{mother_quest}{}
+\item{partner_quest}{}
+\item{partner_clinic}{}
+\item{partner}{}
+\item{child_based}{}
+\item{child_completed}{}
+}
 }
 }
 \usage{
