@@ -1,3 +1,7 @@
+# alspac 0.48.12
+
+* R CMD check fixes
+
 # alspac 22/12/2025
 
 1. First version release of G1 (YPN) file (Life @32 Questionnaire 2024)

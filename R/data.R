@@ -1,7 +1,7 @@
 #' Current data
 #'
 #' A list of current datasets.
-#' 
+#'
 #' @format ## `current`
 #' A data frame with 87,248 rows and 19 columns:
 #' \describe{

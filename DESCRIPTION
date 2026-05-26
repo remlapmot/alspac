@@ -20,6 +20,6 @@ Imports:
     stringr,
     tibble
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 Config/roxygen2/version: 8.0.0
 Config/roxygen2/markdown: TRUE

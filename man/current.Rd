@@ -30,7 +30,7 @@ A data frame with 87,248 rows and 19 columns:
 }
 }
 \usage{
-current
+data(current)
 }
 \description{
 A list of current datasets.
