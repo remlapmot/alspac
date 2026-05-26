@@ -40,13 +40,13 @@ Provide a list of search terms to find variables in the data dictionary.
 \details{
 The resulting data frame will have the following columns:
 \itemize{
-	\item{obj - The name of the data file}
-	\item{name - The name of the variable}
-	\item{type - The type of data for the variable}
-	\item{lab - A description of the label}
-	\item{code - The ALSPAC dictionary code for the variable}
-	\item{counts - The number of non-NA values in the variable}
-	\item{cat1-4 - These columns correspond to the folder names that the objects were found in}
+\item{obj - The name of the data file}
+\item{name - The name of the variable}
+\item{type - The type of data for the variable}
+\item{lab - A description of the label}
+\item{code - The ALSPAC dictionary code for the variable}
+\item{counts - The number of non-NA values in the variable}
+\item{cat1-4 - These columns correspond to the folder names that the objects were found in}
 }
 }
 \examples{

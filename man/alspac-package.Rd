@@ -13,6 +13,7 @@ Functions to search and extract variables based on keywords from the ALSPAC data
 
 Authors:
 \itemize{
+  \item Gibran Hemani \email{g.hemani@bristol.ac.uk}
   \item Matthew Suderman \email{matt.suderman@bristol.ac.uk}
 }
 

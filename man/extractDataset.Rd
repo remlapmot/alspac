@@ -33,13 +33,13 @@ of the filename (e.g. for "ACEHDBFG.txt" the column would be named "G").}
 
 \item{output_file}{Dataset file (should not already exist). Default is
 derived from function arguments as follows:
-<output_path>/<author>_<b_number>_<date>.<output_format>.}
+<output_path>/\if{html}{\out{<author>}}\emph{<b_number>}\if{html}{\out{<date>}}.<output_format>.}
 
-\item{dictionary}{ALSPAC dictionary to use "current" 
+\item{dictionary}{ALSPAC dictionary to use "current"
 (Default: "current").}
 }
 \value{
-Saves the output dataset to `output_file` and returns it.
+Saves the output dataset to \code{output_file} and returns it.
 }
 \description{
 Extract a dataset for external ALSPAC users

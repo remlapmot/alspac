@@ -4,8 +4,8 @@
 \alias{generateSourcesSpreadsheet}
 \title{This function was used to initially create the inst/extdata/sources.csv
 spreadsheet which provides the source of data for each data file ('obj')
-in the dictionary. This information is then used to determine 
-which bits of data to remove to satisfy exclusion lists. 
+in the dictionary. This information is then used to determine
+which bits of data to remove to satisfy exclusion lists.
 Sources include mother, mother_clinic, mother_quest,
 partner, partner_clinic, partner_quest,
 child_based and child_completed.
