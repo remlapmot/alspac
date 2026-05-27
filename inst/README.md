@@ -63,14 +63,14 @@ sudo kill -9 <pid>; sudo umount inst/mnt
 This should have edited the following file:
 
 ```
-data/current.rdata
+data/current.rda
 ```
 
 ## 3. Commit and update package version
 
 1. See the history of versions using `git tag`
 2. Edit the `../DESCRIPTION` file to bump to the next version
-3. Commit the changes to the `rdata` files and the `DESCRIPTION` file
+3. Commit the changes to `data/current.rda`, `DESCRIPTION`, and `NEWS.md`
 4. Tag the commit `git tag <new tag>`
 5. Push `git push origin <new tag>`
 
