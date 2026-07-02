@@ -4,9 +4,30 @@ loadDictionaries <- function() {
   utils::data("current", envir = globals, package = "alspac")
 
   cache_dir <- tools::R_user_dir("alspac", "cache")
+  pkg_version <- utils::packageVersion("alspac")
   for (nm in c("current", "custom")) {
     f <- file.path(cache_dir, paste0(nm, ".rdata"))
-    if (file.exists(f)) load(f, envir = globals)
+    if (!file.exists(f)) next
+    cached <- new.env()
+    load(f, envir = cached)
+    if (!exists(nm, envir = cached, inherits = FALSE)) next
+    val <- get(nm, envir = cached)
+    # A cached "current" saved by an older package version would shadow a
+    # newer bundled dictionary, so it is ignored; "custom" is user-authored
+    # and always overlaid.
+    if (nm == "current") {
+      cached_version <- attr(val, "alspac_version")
+      if (is.null(cached_version) || cached_version < pkg_version) {
+        packageStartupMessage(
+          "Ignoring cached 'current' dictionary saved by ",
+          if (is.null(cached_version)) "an older version of alspac"
+          else paste0("alspac ", cached_version),
+          "; using the newer bundled dictionary. ",
+          "Run updateDictionaries() to refresh the cache.")
+        next
+      }
+    }
+    assign(nm, val, envir = globals)
   }
 
   combineDictionaries()
@@ -43,6 +64,7 @@ retrieveDictionary <- function(name) {
 
 
 saveDictionary <- function(name, dictionary) {
+  attr(dictionary, "alspac_version") <- utils::packageVersion("alspac")
   assign(name, dictionary, envir = globals)
   cache_dir <- tools::R_user_dir("alspac", "cache")
   dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
