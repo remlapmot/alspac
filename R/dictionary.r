@@ -29,22 +29,14 @@ combineDictionaries <- function() {
 
 
 retrieveDictionary <- function(name) {
+  # .onAttach has not run if the package is used without being attached
+  # (e.g. alspac::findVars()), and lazy-loaded data is not visible in the
+  # namespace environment, so populate globals on first use.
+  if (!exists("current", envir = globals))
+    loadDictionaries()
+
   if (name %in% ls(envir = globals))
     return(get(name, envir = globals))
-
-  cache_file <- file.path(tools::R_user_dir("alspac", "cache"),
-                          paste0(name, ".rdata"))
-  if (file.exists(cache_file)) {
-    load(cache_file, envir = globals)
-    return(get(name, envir = globals))
-  }
-
-  ns <- asNamespace("alspac")
-  if (exists(name, envir = ns, inherits = FALSE)) {
-    val <- get(name, envir = ns)
-    assign(name, val, envir = globals)
-    return(val)
-  }
 
   stop("dictionary '", name, "' does not exist")
 }
