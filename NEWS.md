@@ -4,7 +4,7 @@
 * `updateDictionaries()` now writes cached updates to `tools::R_user_dir("alspac", "cache")` instead of into the installed library, so it no longer requires write access to the library and no longer races between users sharing a library.
 * The internal `globals` environment is no longer attached to the user's global environment.
 * `.onLoad` no longer calls `print()`; `setDataDir()` errors are reported via `packageStartupMessage()`.
-* `checkDictionaries()` no longer iterates each dictionary twice and uses `message()` instead of `cat()`.
+* `checkDictionaries()` no longer iterates each dictionary twice and uses `packageStartupMessage()` instead of `cat()`.
 * Dictionaries are now loaded on first use if the package has not been attached, so calls such as `alspac::findVars()` work without `library(alspac)`.
 * Cached dictionaries are stamped with the package version when saved. A cached `current` dictionary saved by an older version of the package is ignored in favour of the newer bundled dictionary; re-run `updateDictionaries()` to refresh the cache.
 
