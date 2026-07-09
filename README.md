@@ -44,7 +44,7 @@ To install the latest version:
 
 ```r
 install.packages("remotes")
-remotes::install_github("explodecomputer/alspac")
+remotes::install_github("alspac/alspac")
 ```
 
 The `alspac` package can then be loaded as follows:
