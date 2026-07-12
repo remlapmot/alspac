@@ -14,6 +14,7 @@
 * Fixed a malformed `stop()` call in the internal `generateSourcesSpreadsheet()` that masked its error message with "NA/NaN argument".
 * Fixed a self-referential default argument (`haven=haven`) in the internal `extractVarsCore()`.
 * Fixed `filterVars()` erroring with "dim(X) must have a positive length" when given a single-row input.
+* The internal `checkDataDir()` now returns `TRUE` on success instead of always returning `FALSE`.
 
 **Migration note:** users who previously ran `updateDictionaries()` had their cached dictionary written into the installed library. After upgrading, the bundled snapshot will be used until `updateDictionaries()` is re-run; the new cache will live in `tools::R_user_dir("alspac", "cache")`.
 

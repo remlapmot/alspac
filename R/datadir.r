@@ -58,5 +58,4 @@ checkDataDir <- function(datadir) {
              "Please check that the R: drive has been mounted onto your computer through the UoB VPN. ",
              "Run setDataDir(<directory name>) to try again.")
     }
-    FALSE
 }
