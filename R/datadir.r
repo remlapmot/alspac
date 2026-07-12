@@ -2,9 +2,9 @@
 #'
 #' The R drive will be mounted in different paths for different systems.
 #' This function guesses the path to be used as default in setDataDir
-#' 
+#'
 #' @export
-#' @return NULL
+#' @return The guessed path to the ALSPAC data directory.
 getDefaultDataDir <- function() {
 
 	d <- switch(Sys.info()['sysname'],
@@ -25,8 +25,8 @@ getDefaultDataDir <- function() {
 #' function to locate the alspac data files.
 #' This function guesses the path to be used as default in setDataDir. The defaults are:
 #' \itemize{
-#' \item{Windows: R:/Data/}
-#' \item{Mac: /Volumes/data/}
+#' \item{Windows: R:/Data}
+#' \item{Mac: /Volumes/ALSPAC-data/}
 #' \item{Linux: ~/.gvfs/data/}
 #' }
 #' 

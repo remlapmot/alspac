@@ -17,7 +17,7 @@ extractVars(
 \item{x}{Output from \code{findVars}}
 
 \item{exclude_withdrawn}{Whether to automatically exclude withdrawn consent IDs. Default is TRUE.
-This is conservative, removing all withdrawn consant ALNs from all datasets. Only use FALSE here
+This is conservative, removing all withdrawn consent ALNs from all datasets. Only use FALSE here
 if you have a more specific list of withdrawn consent IDs for your specific variables.}
 
 \item{core_only}{Whether to automatically exclude data from participants
@@ -32,7 +32,7 @@ automatically when child-based or child-completed variables are not requested.}
 \item{haven}{Logical. Default \code{FALSE}.}
 }
 \value{
-A data frame with all the variable specified in \code{x}. If \code{exclude_withdrawn} was \code{TRUE}, then columns
+A data frame with all the variables specified in \code{x}. If \code{exclude_withdrawn} was \code{TRUE}, then columns
 named \code{woc_*} indicate which samples were excluded.
 }
 \description{
@@ -44,7 +44,7 @@ retrieve all the variables from these files and collapse them into a single data
 It will return columns for all the variables, plus columns for \code{aln}, \code{qlet} and \code{mult_mum}
 or \code{mult_dad} if they were present in any of the files.
 
-Suppose we extract a four variables, one for each of mothers, children, fathers and partners. This will return the variables requested, along with some other columns -
+Suppose we extract four variables, one for each of mothers, children, fathers and partners. This will return the variables requested, along with some other columns -
 \itemize{
 \item \code{aln} - This is the pregnancy identifier. NOTE - this is \strong{not} an individual identifier. For example, notice that row 4 has entries for the father variable \code{ff1a005a}, the mother variable \code{fm1a010a}, and the partner variable \code{pc013}.
 \item \code{qlet} - This is the child ID for the specific pregnancy. It will take values from A-D. \strong{All} children will have a qlet, and \strong{only} children will have a qlet. Therefore \strong{if qlet is not NA, that row represents an individual child}.

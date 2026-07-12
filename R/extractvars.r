@@ -7,7 +7,7 @@
 #' It will return columns for all the variables, plus columns for `aln`, `qlet` and `mult_mum` 
 #' or `mult_dad` if they were present in any of the files.
 #'
-#' Suppose we extract a four variables, one for each of mothers, children, fathers and partners. This will return the variables requested, along with some other columns -
+#' Suppose we extract four variables, one for each of mothers, children, fathers and partners. This will return the variables requested, along with some other columns -
 #'
 #' - `aln` - This is the pregnancy identifier. NOTE - this is **not** an individual identifier. For example, notice that row 4 has entries for the father variable `ff1a005a`, the mother variable `fm1a010a`, and the partner variable `pc013`.
 #'
@@ -25,7 +25,7 @@
 #'
 #' @param x Output from `findVars`
 #' @param exclude_withdrawn Whether to automatically exclude withdrawn consent IDs. Default is TRUE.
-#' This is conservative, removing all withdrawn consant ALNs from all datasets. Only use FALSE here
+#' This is conservative, removing all withdrawn consent ALNs from all datasets. Only use FALSE here
 #' if you have a more specific list of withdrawn consent IDs for your specific variables.
 #' @param core_only Whether to automatically exclude data from participants
 #' not in the core ALSPAC dataset (Default: TRUE).
@@ -35,7 +35,7 @@
 #' @param spss Logical. Default \code{FALSE}.
 #' @param haven Logical. Default \code{FALSE}.
 #' @export
-#' @return A data frame with all the variable specified in `x`. If \code{exclude_withdrawn} was \code{TRUE}, then columns
+#' @return A data frame with all the variables specified in `x`. If \code{exclude_withdrawn} was \code{TRUE}, then columns
 #' named \code{woc_*} indicate which samples were excluded.
 #' @examples \dontrun{
 #' # Find all variables with BMI in the description
@@ -214,7 +214,7 @@ extractVarsFull <- function(x, spss=FALSE, haven=FALSE) {
                         fn, " does not exist. ",
                         "Please run 'updateDictionaries()' and try again. ",
                         "If you are using input from 'findVars()', ",
-                        "then you will need rerun that as well. ",
+                        "then you will need to rerun that as well. ",
                         "If the problem persists, ",
                         "please send your data query and the error message ",
                         "to the maintainer.")
@@ -365,7 +365,7 @@ convertQlet <- function(qlet) {
 extractWebOutput <- function(filename) {
 	input <- utils::read.csv(filename)
 	if (names(input)[1] != "Variable") {
-		stop("The first column in ", filename, " should be names 'Variable'. Make sure this file has been exported from the ALSPAC variable lookup webapp.")
+		stop("The first column in ", filename, " should be named 'Variable'. Make sure this file has been exported from the ALSPAC variable lookup webapp.")
 	}
 	if (nrow(input) == 0) {
 		stop("No variables present in ", filename)

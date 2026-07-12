@@ -6,6 +6,9 @@
 \usage{
 getDefaultDataDir()
 }
+\value{
+The guessed path to the ALSPAC data directory.
+}
 \description{
 The R drive will be mounted in different paths for different systems.
 This function guesses the path to be used as default in setDataDir

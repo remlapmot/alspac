@@ -194,10 +194,11 @@ exportDictionary <- function(packageDir = ".") {
 #' Create a dictionary from ALSPAC Stata files
 #'
 #' @param datadir ALSPAC data subdirectory from which to create the index
-#' (Default: "Current"). .
+#' (Default: "Current").
 #' @param name If not \code{NULL}, then the resulting dictionary
-#' will be saved to a file in the R package for use next time the package
-#' is loaded. The dictionary will be available with the given name (Default: \code{NULL}).
+#' will be saved to the user cache directory
+#' (\code{tools::R_user_dir("alspac", "cache")}) for use in later R sessions.
+#' The dictionary will be available with the given name (Default: \code{NULL}).
 #' @param quick Logical. Default \code{FALSE}.
 #' @param sourcesFile The path to the sources.csv file
 #' The function uses multiple processors using \code{\link[parallel]{mclapply}()}.
@@ -351,7 +352,7 @@ checkDictionaries <- function() {
   dict_names <- ls(envir = globals)
 
   if (length(dict_names) == 0) {
-    packageStartupMessage("No dictionaries found in the library.")
+    packageStartupMessage("No dictionaries found.")
     return(NULL)
   }
 

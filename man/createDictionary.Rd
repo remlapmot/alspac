@@ -13,11 +13,12 @@ createDictionary(
 }
 \arguments{
 \item{datadir}{ALSPAC data subdirectory from which to create the index
-(Default: "Current"). .}
+(Default: "Current").}
 
 \item{name}{If not \code{NULL}, then the resulting dictionary
-will be saved to a file in the R package for use next time the package
-is loaded. The dictionary will be available with the given name (Default: \code{NULL}).}
+will be saved to the user cache directory
+(\code{tools::R_user_dir("alspac", "cache")}) for use in later R sessions.
+The dictionary will be available with the given name (Default: \code{NULL}).}
 
 \item{quick}{Logical. Default \code{FALSE}.}
 
