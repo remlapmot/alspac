@@ -11,6 +11,7 @@
 * Fixed `findVars(..., logic="none")`, which returned variables matching the search terms in both the name and description instead of variables matching none of the terms (in practice it usually returned zero rows).
 * Removed leftover debugging `print()` calls in `removeExclusions()`.
 * `convertQlet()` now maps qlet values to A-D case-insensitively and stops on unrecognised values instead of silently relabelling factor levels, which could corrupt `alnqlet` identifiers.
+* Fixed a malformed `stop()` call in the internal `generateSourcesSpreadsheet()` that masked its error message with "NA/NaN argument".
 
 **Migration note:** users who previously ran `updateDictionaries()` had their cached dictionary written into the installed library. After upgrading, the bundled snapshot will be used until `updateDictionaries()` is re-run; the new cache will live in `tools::R_user_dir("alspac", "cache")`.
 

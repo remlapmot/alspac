@@ -193,7 +193,7 @@ generateSourcesSpreadsheet <- function() {
     paths <- getPaths()
     if(!all(names(withdrawals) %in% names(paths))) {
         stop(
-            "New exclusion file(s) have been created but are not being handled here":
+            "New exclusion file(s) have been created but are not being handled here: ",
             paste(setdiff(names(withdrawals), names(paths)), collapse=", "))
     }
 
