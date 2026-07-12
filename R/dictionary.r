@@ -95,7 +95,7 @@ dictionaryGood <- function(dictionary, max.print=10) {
     alspacdir <- options()$alspac_data_dir
 
     filenames <- unique(with(dictionary, file.path(alspacdir, path, obj)))
-    missing.idx <- which(!sapply(filenames, file.exists))
+    missing.idx <- which(!file.exists(filenames))
     num.missing <- length(missing.idx)
     if (num.missing == 0) {
         TRUE
