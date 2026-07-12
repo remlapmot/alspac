@@ -49,12 +49,9 @@ filterVars <- function(x, ...) {
         ## add the variable name to the filter
         filter <- c(name=paste0("^", varname, "$"), filter.list[[varname]])
         ## identify which variable(s) satisfy the filter
-        matches <- sapply(names(filter), function(column) {
+        matches <- Reduce(`&`, lapply(names(filter), function(column) {
             grepl(filter[[column]], x[[column]])
-        })
-        if (length(filter) > 1) {
-            matches <- apply(matches, 1, all)
-        }
+        }))
         satisfies.idx <- which(matches)
         ## if no variable satisfies the filter, then issue a warning
         if (length(satisfies.idx) == 0) {
