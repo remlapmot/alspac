@@ -9,7 +9,7 @@
 * [Extracting variables](#extracting-variables)
 * [Using the website to browse variables](#using-the-website-to-browse-variables)
 * [Dictionary Maintenance](#dictionary-maintenance)
-* [Generating datasets for external users](#generating-datasets-for-external-users)
+* [Generating datasets for external users](#generating-datasets-for-external-users-for-alspac-data-buddies)
 
 ## Motivation
 
