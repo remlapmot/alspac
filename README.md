@@ -246,9 +246,28 @@ updateDictionaries()
 ```
 
 This will take a few minutes to run.
-These updated dictionaries will be saved within the R package
-for use in later R sessions.  In other words, an update will only
-need to be peformed one time.  
+The updated dictionary is saved to your personal cache directory
+(`tools::R_user_dir("alspac", "cache")`) for use in later R sessions,
+so an update only needs to be performed one time.
+When you install a newer version of the package, any older cached
+dictionary is automatically ignored in favour of the dictionary bundled
+with the new version.
+
+### Releasing a dictionary update (ALSPAC data team)
+
+`updateDictionaries()` only refreshes your personal cache; it does not
+change the dictionary bundled with the package. To release an updated
+dictionary to all users after the file store changes:
+
+1. Make a new branch in a git checkout of this repository.
+2. Run `updateDictionaries()`.
+3. From the checkout directory, run `exportDictionary()`. This writes
+   the dictionary created in step 2 to `data/current.rda`.
+4. Bump the `Version` field in `DESCRIPTION`. This step is required:
+   users' personal cached dictionaries are only superseded by the
+   bundled dictionary when the installed package version is newer.
+5. Commit the changes and open a pull request to the master branch.
+6. After merging, notify users to install the new package version.
 
 ## Generating datasets for external users (for ALSPAC data buddies)
 

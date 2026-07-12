@@ -114,12 +114,80 @@ dictionaryGood <- function(dictionary, max.print=10) {
 #' Update dictionaries
 #'
 #' Update the variable dictionaries for the ALSPAC dataset.
-#' 
+#'
+#' The new dictionary is saved to the user cache
+#' (`tools::R_user_dir("alspac", "cache")`) and is used in preference to
+#' the dictionary bundled with the package in this and later R sessions.
+#' It is not shared with other users; to ship an updated dictionary to
+#' everyone in a new package release, follow up with [exportDictionary()].
+#'
 #' @export
+#' @return \code{TRUE}.
 updateDictionaries <- function() {
     createDictionary("Current", name="current", quick=FALSE)
     #createDictionary("Useful_data", name="useful", quick=FALSE)
     return(TRUE)
+}
+
+
+#' Export the updated dictionary into the package source (maintainers)
+#'
+#' Copies the dictionary most recently created by [updateDictionaries()]
+#' from the user cache into the \code{data/} directory of an alspac
+#' package source checkout, so that it can be committed and shipped as
+#' the bundled dictionary in the next package release.
+#'
+#' This is a maintainer function. When the ALSPAC file store is updated,
+#' the release process is:
+#' \enumerate{
+#'   \item make a new branch in a git checkout of the package repository
+#'   \item run \code{updateDictionaries()}
+#'   \item run \code{exportDictionary()} from the checkout directory
+#'   \item bump the \code{Version} field in \code{DESCRIPTION}
+#'   \item commit both changes and open a pull request
+#'   \item after merging, notify users to install the new version
+#' }
+#' The version bump is required: users who have run
+#' \code{updateDictionaries()} themselves have a personal cached
+#' dictionary, and that cache is only ignored in favour of the bundled
+#' dictionary when the installed package version is newer than the
+#' version that saved the cache.
+#'
+#' @param packageDir Path to the root of an alspac package source
+#' checkout (Default: \code{"."}).
+#' @export
+#' @return The path to the written file, invisibly.
+exportDictionary <- function(packageDir = ".") {
+  descFile <- file.path(packageDir, "DESCRIPTION")
+  if (!file.exists(descFile) ||
+      !identical(unname(read.dcf(descFile, fields = "Package")[1, 1]), "alspac"))
+    stop("'", packageDir, "' does not look like an alspac package source ",
+         "checkout (no DESCRIPTION file for a package named 'alspac')")
+
+  cacheFile <- file.path(tools::R_user_dir("alspac", "cache"), "current.rdata")
+  if (!file.exists(cacheFile))
+    stop("No cached dictionary found in ", dirname(cacheFile),
+         ". Run updateDictionaries() first.")
+
+  cached <- new.env()
+  load(cacheFile, envir = cached)
+  if (!exists("current", envir = cached, inherits = FALSE))
+    stop("'", cacheFile, "' does not contain a 'current' dictionary. ",
+         "Rerun updateDictionaries() and try again.")
+  current <- get("current", envir = cached)
+  # The version stamp is only meaningful on cached copies; the bundled
+  # dictionary is authoritative for the release that ships it.
+  attr(current, "alspac_version") <- NULL
+
+  dataDir <- file.path(packageDir, "data")
+  dir.create(dataDir, showWarnings = FALSE)
+  outFile <- file.path(dataDir, "current.rda")
+  save(current, file = outFile, compress = "xz")
+  message("Dictionary cached on ", format(file.mtime(cacheFile)),
+          " written to ", outFile, ".\n",
+          "Remember to bump the Version in ", descFile, " before ",
+          "committing, so that users' cached dictionaries are superseded.")
+  invisible(outFile)
 }
 
 

@@ -6,6 +6,16 @@
 \usage{
 updateDictionaries()
 }
+\value{
+\code{TRUE}.
+}
 \description{
 Update the variable dictionaries for the ALSPAC dataset.
+}
+\details{
+The new dictionary is saved to the user cache
+(\code{tools::R_user_dir("alspac", "cache")}) and is used in preference to
+the dictionary bundled with the package in this and later R sessions.
+It is not shared with other users; to ship an updated dictionary to
+everyone in a new package release, follow up with \code{\link[=exportDictionary]{exportDictionary()}}.
 }
