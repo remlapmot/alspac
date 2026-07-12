@@ -10,7 +10,9 @@ getDefaultDataDir <- function() {
 	d <- switch(Sys.info()['sysname'],
 		Darwin = "/Volumes/ALSPAC-data/",
 		Linux = "~/.gvfs/data/",
-		Windows = "R:/Data"
+		Windows = "R:/Data",
+		stop("Unable to guess the ALSPAC data directory on this operating system. ",
+		     "Run setDataDir(<directory name>) to set it manually.")
 	)
 	return(d)
 }

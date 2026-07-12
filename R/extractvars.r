@@ -374,11 +374,8 @@ extractWebOutput <- function(filename) {
         l <- retrieveDictionary("current")
 	l <- subset(l, name %in% input$Variable)
 
-	if (nrow(l) != 0) {
-		out <- extractVars(l)
-		return(out)
-	} else {
+	if (nrow(l) == 0) {
 		stop("None of the variables in ", filename, " were in the 'current' dictionary")
 	}
-	return(l)
+	extractVars(l)
 }

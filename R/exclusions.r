@@ -126,8 +126,8 @@ addSourcesToDictionary <- function(dictionary, sourcesFile = system.file("extdat
         child_completed=c("aln","qlet","alnqlet","in_alsp","tripquad"))
     if(!all(names(withdrawals) %in% names(keep))) {
         stop(
-            "New exclusion file(s) have been created but are not being handled here:",
-            paste(setdiff(names(withdrawals), names(paths)), collapse=", "))
+            "New exclusion file(s) have been created but are not being handled here: ",
+            paste(setdiff(names(withdrawals), names(keep)), collapse=", "))
     }
 
     sources <- utils::read.csv(sourcesFile, stringsAsFactors=FALSE)

@@ -16,6 +16,7 @@
 * Fixed `filterVars()` erroring with "dim(X) must have a positive length" when given a single-row input.
 * The internal `checkDataDir()` now returns `TRUE` on success instead of always returning `FALSE`.
 * Removed a dead `exceptions` list in `removeExclusions()` that was silently overwritten by a narrower one; the comprehensive list now applies.
+* Minor fixes: `addSourcesToDictionary()` now reports the correct unhandled exclusion groups in its error message; removed unreachable code in `extractWebOutput()`; `getDefaultDataDir()` gives a clear error on unrecognised operating systems instead of returning `NULL`.
 
 **Migration note:** users who previously ran `updateDictionaries()` had their cached dictionary written into the installed library. After upgrading, the bundled snapshot will be used until `updateDictionaries()` is re-run; the new cache will live in `tools::R_user_dir("alspac", "cache")`.
 
