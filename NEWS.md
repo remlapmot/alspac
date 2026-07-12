@@ -12,6 +12,7 @@
 * Removed leftover debugging `print()` calls in `removeExclusions()`.
 * `convertQlet()` now maps qlet values to A-D case-insensitively and stops on unrecognised values instead of silently relabelling factor levels, which could corrupt `alnqlet` identifiers.
 * Fixed a malformed `stop()` call in the internal `generateSourcesSpreadsheet()` that masked its error message with "NA/NaN argument".
+* Fixed a self-referential default argument (`haven=haven`) in the internal `extractVarsCore()`.
 
 **Migration note:** users who previously ran `updateDictionaries()` had their cached dictionary written into the installed library. After upgrading, the bundled snapshot will be used until `updateDictionaries()` is re-run; the new cache will live in `tools::R_user_dir("alspac", "cache")`.
 

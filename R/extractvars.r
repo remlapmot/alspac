@@ -74,7 +74,7 @@ extractVars <- function(x, exclude_withdrawn = TRUE, core_only=TRUE, adult_only=
 
 ## restrict data extracted as in the SPSS/Stata
 ## scripts in R:\Data\Syntax\
-extractVarsCore <- function(x, spss=FALSE, haven=haven) {
+extractVarsCore <- function(x, spss=FALSE, haven=FALSE) {
     dat <- extractVarsFull(x,spss=spss, haven=haven)
 
     ## return TRUE for each row in x iff that row contains at least one TRUE
