@@ -43,12 +43,6 @@ removeExclusions <- function(x, dictionary) {
   ## these variables are computed, ignore them
   exceptions <- c("alnqlet",colnames(x)[grep("^in_", colnames(x))])
   
-  ## Debugging step: print column names and dictionary names
-  print("Columns in x:")
-  print(colnames(x))
-  print("Allowed names in dictionary:")
-  print(dictionary$name)
-
   ## check all variables are in the dictionary or are computed variables
   if (!all(colnames(x) %in% c(dictionary$name, exceptions))) {
     mismatched <- setdiff(colnames(x), c(dictionary$name, exceptions))
