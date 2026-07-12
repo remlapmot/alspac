@@ -334,13 +334,14 @@ extractVarsFull <- function(x, spss=FALSE, haven=FALSE) {
 
 
 convertQlet <- function(qlet) {
-	if (!is.factor(qlet)) {
-		qlet <- as.factor(qlet)
+	qlet <- toupper(trimws(as.character(qlet)))
+	unexpected <- unique(qlet[!is.na(qlet) & !qlet %in% c("A", "B", "C", "D")])
+	if (length(unexpected) > 0) {
+		stop("Unexpected qlet value(s): ",
+		     paste(unexpected, collapse=", "),
+		     ". Expected A, B, C or D. Please contact maintainers.")
 	}
-	if (!all(levels(qlet) %in% c("A", "B", "C", "D"))) {
-		levels(qlet) <- c("A", "B", "C", "D")		
-	}
-	return(qlet)
+	factor(qlet, levels=c("A", "B", "C", "D"))
 }
 
 

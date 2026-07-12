@@ -10,6 +10,7 @@
 * New maintainer function `exportDictionary()` writes the dictionary created by `updateDictionaries()` into a package source checkout's `data/current.rda` for release. Because `updateDictionaries()` no longer writes into the package, this is now a required step when releasing a dictionary update; the release process is documented in the README. Note that bumping the package version in each dictionary release is what causes users' stale personal caches to be superseded.
 * Fixed `findVars(..., logic="none")`, which returned variables matching the search terms in both the name and description instead of variables matching none of the terms (in practice it usually returned zero rows).
 * Removed leftover debugging `print()` calls in `removeExclusions()`.
+* `convertQlet()` now maps qlet values to A-D case-insensitively and stops on unrecognised values instead of silently relabelling factor levels, which could corrupt `alnqlet` identifiers.
 
 **Migration note:** users who previously ran `updateDictionaries()` had their cached dictionary written into the installed library. After upgrading, the bundled snapshot will be used until `updateDictionaries()` is re-run; the new cache will live in `tools::R_user_dir("alspac", "cache")`.
 
