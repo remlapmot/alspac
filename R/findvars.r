@@ -40,17 +40,16 @@ findVars <- function(..., logic="any", ignore.case=TRUE, perl=FALSE, fixed=FALSE
 	l <- unlist(list(...))
 	stopifnot(length(l) > 0)
 	stopifnot(logic %in% c("any", "all", "none"))
-	invert <- logic == "none"
 	if (whole.word) {
 		l <- lapply(l, whole.word.regex)
 	}
 
 	n <- 1:nrow(dictionary)
 
-	# Search for patterns in label
+	# Search for patterns in label and name
         g <- lapply(l, function(l) {
-            c(grep(l, dictionary$lab, ignore.case = ignore.case, perl = perl, fixed = fixed, invert = invert),
-              grep(whole.word.regex(l), dictionary$name, ignore.case = ignore.case, perl = perl, fixed = fixed, invert = invert))
+            c(grep(l, dictionary$lab, ignore.case = ignore.case, perl = perl, fixed = fixed),
+              grep(whole.word.regex(l), dictionary$name, ignore.case = ignore.case, perl = perl, fixed = fixed))
         })
 
 	if (logic == "any") {
@@ -58,8 +57,7 @@ findVars <- function(..., logic="any", ignore.case=TRUE, perl=FALSE, fixed=FALSE
 	} else if(logic == "all") {
 		g <- Reduce(intersect, g)
 	} else if(logic == "none") {
-		a <- unique(unlist(g))
-		g <- n[!n %in% a]
+		g <- setdiff(n, unlist(g))
 	}
 
 	out <- dictionary[g, ]
