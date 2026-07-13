@@ -12,3 +12,6 @@
 
 # Output files from R CMD check
 /*.Rcheck/
+
+# macOS
+.DS_Store

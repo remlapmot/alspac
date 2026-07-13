@@ -21,6 +21,7 @@
 * Documentation fixes: corrected typos, the documented Mac default data directory, the `findVars()` column list and `ignore.case` description, and stale references to dictionaries being saved "in the R package". Updated the `filterVars()` example in the README and help page to match the current dictionary. Shortened the startup message.
 * Removed hardcoded dataset dimensions and file counts from the documentation so they cannot go stale between dictionary releases.
 * Removed the broken Docker-based test harness in `tests/` (it relied on the retired MRAN snapshot service, R 4.0.2 and the old GitHub organisation name). The manual regression tests still run locally via `make all` in `tests/`; see `tests/readme.md`. The `tests/` directory is now excluded from the built package.
+* Removed the superseded dictionary-update tooling from `inst/` (Dockerfile, Makefile, cluster README, `create_dictionary_from_stata.R`, `report.rmd`/`report.html` and `test.R`); the release process is now `updateDictionaries()` + `exportDictionary()` as documented in the README. `inst/` now contains only `extdata/sources.csv`, so installed packages no longer include a 675 KB generated HTML report.
 
 **Migration note:** users who previously ran `updateDictionaries()` had their cached dictionary written into the installed library. After upgrading, the bundled snapshot will be used until `updateDictionaries()` is re-run; the new cache will live in `tools::R_user_dir("alspac", "cache")`.
 
