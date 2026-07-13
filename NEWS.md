@@ -19,6 +19,7 @@
 * Minor fixes: `addSourcesToDictionary()` now reports the correct unhandled exclusion groups in its error message; removed unreachable code in `extractWebOutput()`; `getDefaultDataDir()` gives a clear error on unrecognised operating systems instead of returning `NULL`.
 * `dictionaryGood()` uses vectorised `file.exists()` instead of `sapply()`, which is faster when checking many files over a network drive.
 * Documentation fixes: corrected typos, the documented Mac default data directory, the `findVars()` column list and `ignore.case` description, and stale references to dictionaries being saved "in the R package". Updated the `filterVars()` example in the README and help page to match the current dictionary. Shortened the startup message.
+* Removed hardcoded dataset dimensions and file counts from the documentation so they cannot go stale between dictionary releases.
 
 **Migration note:** users who previously ran `updateDictionaries()` had their cached dictionary written into the installed library. After upgrading, the bundled snapshot will be used until `updateDictionaries()` is re-run; the new cache will live in `tools::R_user_dir("alspac", "cache")`.
 

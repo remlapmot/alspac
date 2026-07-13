@@ -64,7 +64,7 @@ There is one data object that comes with the package - `current` - that contains
 data(current)
 ```
 
-The top 6 rows of `current` look like this:
+The top 6 rows of `current` look something like this (the exact values change as the dictionary is updated):
 
 ```
    obj name                   lab counts    type    cat1  cat2   cat3 cat4         path

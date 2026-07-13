@@ -39,16 +39,16 @@ named \code{woc_*} indicate which samples were excluded.
 Take the output from \code{findVars} as a list of variables to extract from ALSPAC data
 }
 \details{
-There are about 130 ALSPAC data files. Given output from \code{findVars}, this function will
-retrieve all the variables from these files and collapse them into a single data frame.
+Given output from \code{findVars}, this function will
+retrieve all the variables from the ALSPAC data files and collapse them into a single data frame.
 It will return columns for all the variables, plus columns for \code{aln}, \code{qlet} and \code{mult_mum}
 or \code{mult_dad} if they were present in any of the files.
 
 Suppose we extract four variables, one for each of mothers, children, fathers and partners. This will return the variables requested, along with some other columns -
 \itemize{
-\item \code{aln} - This is the pregnancy identifier. NOTE - this is \strong{not} an individual identifier. For example, notice that row 4 has entries for the father variable \code{ff1a005a}, the mother variable \code{fm1a010a}, and the partner variable \code{pc013}.
+\item \code{aln} - This is the pregnancy identifier. NOTE - this is \strong{not} an individual identifier. For example, a row may have entries for a father variable, a mother variable, and a partner variable, all under the same \code{aln}.
 \item \code{qlet} - This is the child ID for the specific pregnancy. It will take values from A-D. \strong{All} children will have a qlet, and \strong{only} children will have a qlet. Therefore \strong{if qlet is not NA, that row represents an individual child}.
-\item \code{alnqlet} - this is the ALN + QLET. If the individual is a child (e.g. row 8) then they will have a different \code{alnqlet} compared to the \code{aln}. Otherwise, the \code{aln} is the same as the \code{alnqlet}
+\item \code{alnqlet} - this is the ALN + QLET. If the individual is a child then they will have a different \code{alnqlet} compared to the \code{aln}. Otherwise, the \code{aln} is the same as the \code{alnqlet}
 \item \code{mult_mum} and \code{mult_dad} - Sometimes the same mother (or father) had more than one pregnancy in the 18 month recruitment period. Those individuals have two ALNs. If either of these columns is "Yes" then that means you can drop them from the results if you want to avoid individuals being duplicated. This is the guidance from the FOM2 documentation:
 
 1.7 Important Note for all data users:

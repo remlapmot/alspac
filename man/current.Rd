@@ -7,7 +7,8 @@
 \format{
 \subsection{\code{current}}{
 
-A data frame with 98,369 rows and 20 columns:
+A data frame with one row per variable in the ALSPAC data files
+and the following columns:
 \describe{
 \item{obj}{Stata dataset name}
 \item{name}{variable name}
