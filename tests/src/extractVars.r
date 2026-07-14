@@ -1,7 +1,8 @@
 library(alspac)
 
-setDataDir("/home/alspac")
-#setDataDir("alspac")
+## uses the default data directory for this operating system;
+## pass a path, e.g. setDataDir("R:/Data"), if it is mounted elsewhere
+setDataDir()
 
 if (!dictionaryGood("current")) {
     createDictionary("Current", "current")

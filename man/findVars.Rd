@@ -19,7 +19,7 @@ findVars(
 
 \item{logic}{Conditions for the search strings, can be "all", "any", or "none". Set to "any" by default.}
 
-\item{ignore.case}{Should search terms be case sensitive? Defaults to TRUE.}
+\item{ignore.case}{Whether to ignore case when matching search terms. Defaults to TRUE.}
 
 \item{perl}{logical.  Should perl-compatible regexps be used? Defaults to FALSE.}
 
@@ -32,7 +32,7 @@ findVars(
 New dictionaries can be created using the \code{\link{createDictionary}()} function. (Default: "current").}
 }
 \value{
-A data frame containing a list of the variables, the files they originate from, and some descripton about the files
+A data frame containing a list of the variables, the files they originate from, and some description about the files
 }
 \description{
 Provide a list of search terms to find variables in the data dictionary.
@@ -40,13 +40,12 @@ Provide a list of search terms to find variables in the data dictionary.
 \details{
 The resulting data frame will have the following columns:
 \itemize{
-	\item{obj - The name of the data file}
-	\item{name - The name of the variable}
-	\item{type - The type of data for the variable}
-	\item{lab - A description of the label}
-	\item{code - The ALSPAC dictionary code for the variable}
-	\item{counts - The number of non-NA values in the variable}
-	\item{cat1-4 - These columns correspond to the folder names that the objects were found in}
+\item{obj - The name of the data file}
+\item{name - The name of the variable}
+\item{type - The type of data for the variable}
+\item{lab - A description of the label}
+\item{counts - The number of non-NA values in the variable}
+\item{cat1-4 - These columns correspond to the folder names that the objects were found in}
 }
 }
 \examples{

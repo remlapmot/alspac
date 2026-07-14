@@ -3,7 +3,8 @@
 #' A list of current datasets.
 #' 
 #' @format ## `current`
-#' A data frame with 87,248 rows and 19 columns:
+#' A data frame with one row per variable in the ALSPAC data files
+#' and the following columns:
 #' \describe{
 #'   \item{obj}{Stata dataset name}
 #'   \item{name}{variable name}
@@ -14,8 +15,9 @@
 #'   \item{cat2}{}
 #'   \item{cat3}{}
 #'   \item{cat4}{}
-#'   \item{path}{}
 #'   \item{cat5}{}
+#'   \item{path}{}
+#'   \item{cat6}{}
 #'   \item{mother}{}
 #'   \item{mother_clinic}{}
 #'   \item{mother_quest}{}

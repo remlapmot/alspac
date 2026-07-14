@@ -13,13 +13,13 @@ setDataDir(datadir = getDefaultDataDir())
 Null. Assigns the option alspac_data_dir
 }
 \description{
-This function is automatically called upon loading the package through `library(alspac)`
-It creates a global option called `alspac_data_dir` which is used by the \code{extractVars}
+This function is automatically called upon loading the package through \code{library(alspac)}
+It creates a global option called \code{alspac_data_dir} which is used by the \code{extractVars}
 function to locate the alspac data files.
 This function guesses the path to be used as default in setDataDir. The defaults are:
 \itemize{
-\item{Windows: R:/Data/}
-\item{Mac: /Volumes/data/}
+\item{Windows: R:/Data}
+\item{Mac: /Volumes/ALSPAC-data/}
 \item{Linux: ~/.gvfs/data/}
 }
 }

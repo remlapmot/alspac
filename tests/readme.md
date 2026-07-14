@@ -1,21 +1,33 @@
 ## Test the `alspac` R package
 
-To run the tests in a docker container with a specific version of R,
-first edit the ALSPACDIR variable in `run-tests.sh`
-to the ALSPAC data directory. 
+These are manual regression tests. They require:
 
-Then run `run-tests.sh`.
-```
-bash run-tests.sh
-```
-Output files will appear in the `outputs` directory.
-This script will first build a container,
-and then run the tests in the container.
+* R with the `alspac` package installed (the version you want to test)
+* access to the ALSPAC data directory (the R: drive), mounted at the
+  default location for your operating system (see `?setDataDir`) --
+  otherwise edit the `setDataDir()` call in the scripts under `src/`
+* `make`
 
-To debug an example interactively:
+Run the tests from this directory:
+
 ```
-docker run -it -v $ALSPACDIR:/home/alspac -v $CURRENTDIR:/home/example alspac-r-test /bin/bash
+make all
 ```
 
+Output files appear in the `outputs` directory. Compare them against
+the reference outputs in the dated `outputs-*` directories from
+previous runs, e.g.
 
+```
+diff -r outputs-20221213 outputs
+```
 
+The scripts also contain `stopifnot()` checks of expected row counts
+and withdrawal-of-consent numbers; these change as the study data are
+updated, so update the expected values when the file store changes.
+
+To rerun from scratch, first remove earlier output:
+
+```
+make clean
+```

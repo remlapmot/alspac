@@ -9,7 +9,7 @@
 * [Extracting variables](#extracting-variables)
 * [Using the website to browse variables](#using-the-website-to-browse-variables)
 * [Dictionary Maintenance](#dictionary-maintenance)
-* [Generating datasets for external users](#generating-datasets-for-external-users)
+* [Generating datasets for external users](#generating-datasets-for-external-users-for-alspac-data-buddies)
 
 ## Motivation
 
@@ -44,7 +44,7 @@ To install the latest version:
 
 ```r
 install.packages("remotes")
-remotes::install_github("explodecomputer/alspac")
+remotes::install_github("alspac/alspac")
 ```
 
 The `alspac` package can then be loaded as follows:
@@ -64,7 +64,7 @@ There is one data object that comes with the package - `current` - that contains
 data(current)
 ```
 
-The top 6 rows of `current` look like this:
+The top 6 rows of `current` look something like this (the exact values change as the dictionary is updated):
 
 ```
    obj name                   lab counts    type    cat1  cat2   cat3 cat4         path
@@ -121,31 +121,31 @@ Some of these arguments have defaults but just writing them out for illustration
 
 ### Filtering a list of variables
 
-`findVars` may identify multiple
-variables with the same name.
+`findVars` may identify multiple variables with the same name
+if a variable appears in more than one data file
+(when this happens `findVars` issues a warning).
 
-For example, searching for variables "kz021", "kz011b" and "c645a"
-will return multiple variables with the same name.
+For example, suppose some of the variables in the search below
+were found in several data files and we need to select which
+copy to keep.
 ```r
 varnames <- c("kz021","kz011b","ype9670", "c645a")
 vars <- findVars(varnames)
 ```
 
-There are two ways to select among these duplicates.
+There are two ways to select among duplicates.
 
 1. **Manually** select rows corresponding to variables that I want, e.g.
 ```r
 vars <- vars[vars$name=="kz021" & startsWith(vars$obj,"cp")
 		| vars$name=="kz011b" & startsWith(vars$obj,"cp")
-		| vars$name=="c645a" & vars$cat2=="Quest"
+		| vars$name=="c645a" & vars$cat2=="quest"
 		| vars$name=="YPE9670",]
 ```
 
-In other words, I require that the "kz021" variable come from a
-Stata file name starting with "kz" ("obj" column in `vars`),
-"kz011b" comes from a file name starting with "cp"
-and the description of the variable ("lab" column in `vars`)
-include the word "Participant",
+In other words, I require that the "kz021" and "kz011b" variables
+come from a Stata file name starting with "cp"
+("obj" column in `vars`),
 and "c645a" comes from a questionnaire ("cat2" column in `vars`).
 
 2. Apply **`filterVars`**.
@@ -157,12 +157,14 @@ vars <- subset(vars, subset=tolower(name) %in% varnames)
 ```
 
 I then use `filterVars` to select variables
-satisfying the criteria described above.
+satisfying the criteria described above, additionally requiring
+that the "kz011b" description ("lab" column in `vars`)
+includes the word "Participant".
 ```r
 vars <- filterVars(vars,
-		kz021=c(obj="^kz"),
+		kz021=c(obj="^cp"),
 		kz011b=c(obj="^cp", lab="Participant"),
-		c645a=c(cat2="Quest")) 
+		c645a=c(cat2="quest"))
 ```
 
 ## Extracting variables
@@ -246,9 +248,28 @@ updateDictionaries()
 ```
 
 This will take a few minutes to run.
-These updated dictionaries will be saved within the R package
-for use in later R sessions.  In other words, an update will only
-need to be peformed one time.  
+The updated dictionary is saved to your personal cache directory
+(`tools::R_user_dir("alspac", "cache")`) for use in later R sessions,
+so an update only needs to be performed one time.
+When you install a newer version of the package, any older cached
+dictionary is automatically ignored in favour of the dictionary bundled
+with the new version.
+
+### Releasing a dictionary update (ALSPAC data team)
+
+`updateDictionaries()` only refreshes your personal cache; it does not
+change the dictionary bundled with the package. To release an updated
+dictionary to all users after the file store changes:
+
+1. Make a new branch in a git checkout of this repository.
+2. Run `updateDictionaries()`.
+3. From the checkout directory, run `exportDictionary()`. This writes
+   the dictionary created in step 2 to `data/current.rda`.
+4. Bump the `Version` field in `DESCRIPTION`. This step is required:
+   users' personal cached dictionaries are only superseded by the
+   bundled dictionary when the installed package version is newer.
+5. Commit the changes and open a pull request to the master branch.
+6. After merging, notify users to install the new package version.
 
 ## Generating datasets for external users (for ALSPAC data buddies)
 

@@ -1,69 +1,76 @@
-  loadDictionaries <- function() {        
-    path <- file.path(system.file(package = "alspac"), "data")
-    
-    # Initialize globals in the global environment
-    if (!exists("globals")) {
-      assign("globals", new.env(), envir = .GlobalEnv)
+globals <- new.env(parent = emptyenv())
+
+loadDictionaries <- function() {
+  utils::data("current", envir = globals, package = "alspac")
+
+  cache_dir <- tools::R_user_dir("alspac", "cache")
+  pkg_version <- utils::packageVersion("alspac")
+  for (nm in c("current", "custom")) {
+    f <- file.path(cache_dir, paste0(nm, ".rdata"))
+    if (!file.exists(f)) next
+    cached <- new.env()
+    load(f, envir = cached)
+    if (!exists(nm, envir = cached, inherits = FALSE)) next
+    val <- get(nm, envir = cached)
+    # A cached "current" saved by an older package version would shadow a
+    # newer bundled dictionary, so it is ignored; "custom" is user-authored
+    # and always overlaid.
+    if (nm == "current") {
+      cached_version <- attr(val, "alspac_version")
+      if (is.null(cached_version) || cached_version < pkg_version) {
+        packageStartupMessage(
+          "Ignoring cached 'current' dictionary saved by ",
+          if (is.null(cached_version)) "an older version of alspac"
+          else paste0("alspac ", cached_version),
+          "; using the newer bundled dictionary. ",
+          "Run updateDictionaries() to refresh the cache.")
+        next
+      }
     }
-    
-    for (file in list.files(path, "rdata$", full.names = TRUE))
-      load(file, globals)
-    combineDictionaries()
-    checkDictionaries()
+    assign(nm, val, envir = globals)
   }
+
+  combineDictionaries()
+  checkDictionaries()
+}
 
 
 combineDictionaries <- function() {
-  both <- NULL
-  
-  # Check if "current" exists
-  if (exists("current", envir=globals)) {
-    both <- retrieveDictionary("current")
-  } else {
-    # Handle the case when "current" doesn't exist
-    warning("Dictionary 'current' does not exist. Please run 'updateDictionaries()' to create it.")
+  if (!exists("current", envir = globals)) {
+    packageStartupMessage("Dictionary 'current' does not exist. Please run 'updateDictionaries()' to create it.")
     return(NULL)
-  }  
-  
-  # Check if "custom" exists
-  if (exists("custom", envir=globals)) {
-    custom <- retrieveDictionary("custom")
-    both <- plyr::rbind.fill(both, custom)
-    assign("both", both, globals)
-  } else {
-    warning("Dictionary 'custom' does not exist.")
   }
+
+  both <- retrieveDictionary("current")
+  if (exists("custom", envir = globals)) {
+    both <- plyr::rbind.fill(both, retrieveDictionary("custom"))
+  }
+  assign("both", both, envir = globals)
 }
 
 
 retrieveDictionary <- function(name) {
-  if (name %in% ls(envir = globals)) {
-    get(name, envir = globals)
-  } else {
-    # Try loading from package /data folder
-    path <- system.file("data", paste0(name, ".rdata"), package = "alspac")
-    if (file.exists(path)) {
-      load(path, envir = globals)
-      get(name, envir = globals)
-    } else {
-      stop("dictionary '", name, "' does not exist")
-    }
-  }
+  # .onAttach has not run if the package is used without being attached
+  # (e.g. alspac::findVars()), and lazy-loaded data is not visible in the
+  # namespace environment, so populate globals on first use.
+  if (!exists("current", envir = globals))
+    loadDictionaries()
+
+  if (name %in% ls(envir = globals))
+    return(get(name, envir = globals))
+
+  stop("dictionary '", name, "' does not exist")
 }
 
 
 saveDictionary <- function(name, dictionary) {
-  assign(name, dictionary, globals)
-  #if (name == "current" || name == "useful")
-  #    combineDictionaries()
-  
-  path <- file.path(system.file(package="alspac"), "data")
-  if (!file.exists(path)) {
-    dir.create(path)
-  }
-  save(list=name,
-       file=file.path(path, paste(name, "rdata", sep=".")),
-       envir=globals)
+  attr(dictionary, "alspac_version") <- utils::packageVersion("alspac")
+  assign(name, dictionary, envir = globals)
+  cache_dir <- tools::R_user_dir("alspac", "cache")
+  dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
+  save(list = name,
+       file = file.path(cache_dir, paste0(name, ".rdata")),
+       envir = globals)
 }
 
 
@@ -88,7 +95,7 @@ dictionaryGood <- function(dictionary, max.print=10) {
     alspacdir <- options()$alspac_data_dir
 
     filenames <- unique(with(dictionary, file.path(alspacdir, path, obj)))
-    missing.idx <- which(!sapply(filenames, file.exists))
+    missing.idx <- which(!file.exists(filenames))
     num.missing <- length(missing.idx)
     if (num.missing == 0) {
         TRUE
@@ -107,8 +114,15 @@ dictionaryGood <- function(dictionary, max.print=10) {
 #' Update dictionaries
 #'
 #' Update the variable dictionaries for the ALSPAC dataset.
-#' 
+#'
+#' The new dictionary is saved to the user cache
+#' (`tools::R_user_dir("alspac", "cache")`) and is used in preference to
+#' the dictionary bundled with the package in this and later R sessions.
+#' It is not shared with other users; to ship an updated dictionary to
+#' everyone in a new package release, follow up with [exportDictionary()].
+#'
 #' @export
+#' @return \code{TRUE}.
 updateDictionaries <- function() {
     createDictionary("Current", name="current", quick=FALSE)
     #createDictionary("Useful_data", name="useful", quick=FALSE)
@@ -116,13 +130,75 @@ updateDictionaries <- function() {
 }
 
 
+#' Export the updated dictionary into the package source (maintainers)
+#'
+#' Copies the dictionary most recently created by [updateDictionaries()]
+#' from the user cache into the \code{data/} directory of an alspac
+#' package source checkout, so that it can be committed and shipped as
+#' the bundled dictionary in the next package release.
+#'
+#' This is a maintainer function. When the ALSPAC file store is updated,
+#' the release process is:
+#' \enumerate{
+#'   \item make a new branch in a git checkout of the package repository
+#'   \item run \code{updateDictionaries()}
+#'   \item run \code{exportDictionary()} from the checkout directory
+#'   \item bump the \code{Version} field in \code{DESCRIPTION}
+#'   \item commit both changes and open a pull request
+#'   \item after merging, notify users to install the new version
+#' }
+#' The version bump is required: users who have run
+#' \code{updateDictionaries()} themselves have a personal cached
+#' dictionary, and that cache is only ignored in favour of the bundled
+#' dictionary when the installed package version is newer than the
+#' version that saved the cache.
+#'
+#' @param packageDir Path to the root of an alspac package source
+#' checkout (Default: \code{"."}).
+#' @export
+#' @return The path to the written file, invisibly.
+exportDictionary <- function(packageDir = ".") {
+  descFile <- file.path(packageDir, "DESCRIPTION")
+  if (!file.exists(descFile) ||
+      !identical(unname(read.dcf(descFile, fields = "Package")[1, 1]), "alspac"))
+    stop("'", packageDir, "' does not look like an alspac package source ",
+         "checkout (no DESCRIPTION file for a package named 'alspac')")
+
+  cacheFile <- file.path(tools::R_user_dir("alspac", "cache"), "current.rdata")
+  if (!file.exists(cacheFile))
+    stop("No cached dictionary found in ", dirname(cacheFile),
+         ". Run updateDictionaries() first.")
+
+  cached <- new.env()
+  load(cacheFile, envir = cached)
+  if (!exists("current", envir = cached, inherits = FALSE))
+    stop("'", cacheFile, "' does not contain a 'current' dictionary. ",
+         "Rerun updateDictionaries() and try again.")
+  current <- get("current", envir = cached)
+  # The version stamp is only meaningful on cached copies; the bundled
+  # dictionary is authoritative for the release that ships it.
+  attr(current, "alspac_version") <- NULL
+
+  dataDir <- file.path(packageDir, "data")
+  dir.create(dataDir, showWarnings = FALSE)
+  outFile <- file.path(dataDir, "current.rda")
+  save(current, file = outFile, compress = "xz")
+  message("Dictionary cached on ", format(file.mtime(cacheFile)),
+          " written to ", outFile, ".\n",
+          "Remember to bump the Version in ", descFile, " before ",
+          "committing, so that users' cached dictionaries are superseded.")
+  invisible(outFile)
+}
+
+
 #' Create a dictionary from ALSPAC Stata files
 #'
 #' @param datadir ALSPAC data subdirectory from which to create the index
-#' (Default: "Current"). .
+#' (Default: "Current").
 #' @param name If not \code{NULL}, then the resulting dictionary
-#' will be saved to a file in the R package for use next time the package
-#' is loaded. The dictionary will be available with the given name (Default: \code{NULL}).
+#' will be saved to the user cache directory
+#' (\code{tools::R_user_dir("alspac", "cache")}) for use in later R sessions.
+#' The dictionary will be available with the given name (Default: \code{NULL}).
 #' @param quick Logical. Default \code{FALSE}.
 #' @param sourcesFile The path to the sources.csv file
 #' The function uses multiple processors using \code{\link[parallel]{mclapply}()}.
@@ -273,47 +349,34 @@ checkDictionaries <- function() {
   columns_to_check <- c("mother", "mother_clinic", "mother_quest", "partner_quest","partner_clinic", "partner", "child_based",
                         "child_completed")
   
-  globals <- get("globals", envir = .GlobalEnv) #Get the environment
-  dict_names <- ls(envir = globals) # List all dictionary names
-  
-  if(length(dict_names)== 0){
-    message("No dictionaries found in the library.")
+  dict_names <- ls(envir = globals)
+
+  if (length(dict_names) == 0) {
+    packageStartupMessage("No dictionaries found.")
     return(NULL)
   }
-  
+
   for (dict_name in dict_names) {
-    dict <-get(dict_name, envir = globals) #Retrieve a dictionary
-    #Flag to track if any missing values were found in any column
+    dict <- get(dict_name, envir = globals)
     missing_found <- FALSE
-    
-  
-    # Iterate through each dictionary
-    for (dict_name in dict_names) {
-      dict <- get(dict_name, envir = globals)  # Retrieve the dictionary
-      
-      # Flag to check if any missing values are found
-      missing_found <- FALSE
-      
-      # Iterate over the specific hard-coded columns to check
-      for (col in columns_to_check) {
-        # Check if the column exists in the dictionary
-        if (col %in% colnames(dict)) {
-          # Check for missing values in the column
-          num_NA <- sum(is.na(dict[[col]]))  
-          
-          if (num_NA > 0) {
-            cat(sprintf("Dictionary '%s' has %d missing values in column '%s'.\n", dict_name, num_NA, col))
-            missing_found <- TRUE
-          }
-        } else {
-          cat(sprintf("Column '%s' not found in dictionary '%s'.\n", col, dict_name))
+
+    for (col in columns_to_check) {
+      if (col %in% colnames(dict)) {
+        num_NA <- sum(is.na(dict[[col]]))
+        if (num_NA > 0) {
+          packageStartupMessage(sprintf("Dictionary '%s' has %d missing values in column '%s'.",
+                          dict_name, num_NA, col))
+          missing_found <- TRUE
         }
+      } else {
+        packageStartupMessage(sprintf("Column '%s' not found in dictionary '%s'.",
+                        col, dict_name))
       }
-      
-      # If no missing values were found, print this message once per dictionary
-      if (!missing_found) {
-        cat(sprintf("Dictionary '%s' has no missing values in the Withdrawal of Consent logic columns.\n", dict_name))
-      }
+    }
+
+    if (!missing_found) {
+      packageStartupMessage(sprintf("Dictionary '%s' has no missing values in the Withdrawal of Consent logic columns.",
+                      dict_name))
     }
   }
 }

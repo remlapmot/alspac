@@ -1,4 +1,31 @@
-# alspac 22/12/2025
+# alspac 0.49.0
+
+* Bundled variable dictionary moved from `inst/data/current.rdata` to `data/current.rda` and shipped as standard lazy-loaded package data. Fixes the R CMD check warning about the non-standard `inst/data` directory.
+* `updateDictionaries()` now writes cached updates to `tools::R_user_dir("alspac", "cache")` instead of into the installed library, so it no longer requires write access to the library and no longer races between users sharing a library.
+* The internal `globals` environment is no longer attached to the user's global environment.
+* `.onLoad` no longer calls `print()`; `setDataDir()` errors are reported via `packageStartupMessage()`.
+* `checkDictionaries()` no longer iterates each dictionary twice and uses `packageStartupMessage()` instead of `cat()`.
+* Dictionaries are now loaded on first use if the package has not been attached, so calls such as `alspac::findVars()` work without `library(alspac)`.
+* Cached dictionaries are stamped with the package version when saved. A cached `current` dictionary saved by an older version of the package is ignored in favour of the newer bundled dictionary; re-run `updateDictionaries()` to refresh the cache.
+* New maintainer function `exportDictionary()` writes the dictionary created by `updateDictionaries()` into a package source checkout's `data/current.rda` for release. Because `updateDictionaries()` no longer writes into the package, this is now a required step when releasing a dictionary update; the release process is documented in the README. Note that bumping the package version in each dictionary release is what causes users' stale personal caches to be superseded.
+* Fixed `findVars(..., logic="none")`, which returned variables matching the search terms in both the name and description instead of variables matching none of the terms (in practice it usually returned zero rows).
+* Removed leftover debugging `print()` calls in `removeExclusions()`.
+* `convertQlet()` now maps qlet values to A-D case-insensitively and stops on unrecognised values instead of silently relabelling factor levels, which could corrupt `alnqlet` identifiers.
+* Fixed a malformed `stop()` call in the internal `generateSourcesSpreadsheet()` that masked its error message with "NA/NaN argument".
+* Fixed a self-referential default argument (`haven=haven`) in the internal `extractVarsCore()`.
+* Fixed `filterVars()` erroring with "dim(X) must have a positive length" when given a single-row input.
+* The internal `checkDataDir()` now returns `TRUE` on success instead of always returning `FALSE`.
+* Removed a dead `exceptions` list in `removeExclusions()` that was silently overwritten by a narrower one; the comprehensive list now applies.
+* Minor fixes: `addSourcesToDictionary()` now reports the correct unhandled exclusion groups in its error message; removed unreachable code in `extractWebOutput()`; `getDefaultDataDir()` gives a clear error on unrecognised operating systems instead of returning `NULL`.
+* `dictionaryGood()` uses vectorised `file.exists()` instead of `sapply()`, which is faster when checking many files over a network drive.
+* Documentation fixes: corrected typos, the documented Mac default data directory, the `findVars()` column list and `ignore.case` description, and stale references to dictionaries being saved "in the R package". Updated the `filterVars()` example in the README and help page to match the current dictionary. Shortened the startup message.
+* Removed hardcoded dataset dimensions and file counts from the documentation so they cannot go stale between dictionary releases.
+* Removed the broken Docker-based test harness in `tests/` (it relied on the retired MRAN snapshot service, R 4.0.2 and the old GitHub organisation name). The manual regression tests still run locally via `make all` in `tests/`; see `tests/readme.md`. The `tests/` directory is now excluded from the built package.
+* Removed the superseded dictionary-update tooling from `inst/` (Dockerfile, Makefile, cluster README, `create_dictionary_from_stata.R`, `report.rmd`/`report.html` and `test.R`); the release process is now `updateDictionaries()` + `exportDictionary()` as documented in the README. `inst/` now contains only `extdata/sources.csv`, so installed packages no longer include a 675 KB generated HTML report.
+
+**Migration note:** users who previously ran `updateDictionaries()` had their cached dictionary written into the installed library. After upgrading, the bundled snapshot will be used until `updateDictionaries()` is re-run; the new cache will live in `tools::R_user_dir("alspac", "cache")`.
+
+# alspac 0.48.9
 
 1. First version release of G1 (YPN) file (Life @32 Questionnaire 2024)
  
@@ -19,19 +46,19 @@
 
 4. First version release of Twitter (X) data
 
-# alspac 29/05/2025
+# alspac 0.48.6
 
 1. First version release of G1 Focus@30 clinic data 
  
 - F30_G1 data filename: F30_G1_1a in R:\Data\Current\clinic\G1
 - F30_G1 data documentation: D1199_MB in R:\Data\documentation\built pdf\clinic\G1
 
-# alspac 08/04/2025
+# alspac 0.48.5
 
 1. First release of G2 based data - cohort profiles and both mother and child based questionnaires
 
 - G2 mother based cohort profile G2motherCP_1 in R:\Data\current\other\cohort profile\mother
-- G2 mother enrolmment questionnaire in R:\Data\current\quest\G2\mother
+- G2 mother enrolment questionnaire in R:\Data\current\quest\G2\mother
 - G2 mother pregnancy questionnaire in R:\Data\current\quest\G2\mother
 - G2 mother birth questionnaire in R:\Data\current\quest\G2\mother
 
@@ -42,7 +69,7 @@
 
 Other minor changes made to several release files - details will follow shortly
 
-# alspac package 29/10/2024
+# alspac 0.48.4
 
 1. First version release of G1 (YPM) file (Life @31 Questionnaire 2023)
  
@@ -56,14 +83,14 @@ Other minor changes made to several release files - details will follow shortly
 - FPF data filename: FPF_1a in R:\Data\Current\Quest\Partner
 - FPF data documentation: D1202_FPF in R:\Data\documentation\built_pdf\Quest\Partner 
 
-# alspac 05/01/2024
+# alspac 0.46.0
 
 1. First version release of G1 (YPL) files (Life@30 Winter 2022 Questionnaire) 
 
 - YPL data filename: YPL_1a in R:\Data\Current\Quest\Child Completed 
 - YPL data documentation: D1498_YPL in R:\Data\documentation\built_pdf\Quest\Child Completed
 
-# alspac 15/12/2023
+# alspac 0.46.0
 
 1. First version release of G0 Mothers (MA) and Partners (FPE) files (Parents Summer 2022 Questionnaire) 
 
@@ -72,7 +99,7 @@ Other minor changes made to several release files - details will follow shortly
 - FPE data filename: FPE_1a in R:\Data\Current\Quest\Partner
 - FPE data documentation: D1295_FPE in R:\Data\documentation\built_pdf\Quest\Partner 
 
-# alspac 16/11/2023
+# alspac 0.45.0
 
 1. Updated version release of G0 Mothers (Z) - Parents Questionnaire 2022 
  
@@ -81,14 +108,14 @@ Changes - correction to mult-mum cases included and cohort case selection criter
 - Z data filename: Z_1b in R:\Data\Current\Quest\Mother
 - Z data documentation: D1196_Z.pdf in R:\Data\documentation\built_pdf\Quest\Mother
 
-# alspac package 06/09/2023
+# alspac 0.43.0
 
 1. G0 Partners (FD) files (Parents 2022 Questionnaire) 
 
 - FD data filename: FD_1a in R:\Data\Current\Quest\Partner
 - FD data documentation: D1297_FD in R:\Data\documentation\built_pdf\Quest\Partner
 
-# alspac 01/09/2023
+# alspac 0.42.0
 
 1. First version release of G0 Mothers (Z) and Partners (FD) files (Parents 2022 Questionnaire) 
 
@@ -108,7 +135,7 @@ Contents page updated with explanation of legacy issue regarding error in format
 - KL data documentation: D1310_KL in R:\Data\documentation\built_pdf\Quest\Child Based
  
 
-# alspac 12/07/2023
+# alspac 0.41.0
 
 1. First version release of G1 YPK file (Summer 2022 Questionnaire) 
  
@@ -137,7 +164,7 @@ Fm1a011 erroneously included (from FOM1 clinic) in FOM2 data file. Text in docum
 - FOM2 data filename: FOM2_5b in R:\Data\Current\Clinic\Adult
 - FOM2 data documentation: D2202_FOM2 in R:\Data\documentation\built_pdf\Clinic\Mother
 
-# alspac 04/04/2023
+# alspac 0.40.1
 
 We are pleased to announce that the following new data is now available on general release:
  
@@ -163,7 +190,7 @@ Mental health treatment derived data: antidepessant/antipsychotic/anxiolytic med
 The mult_mum variable is used to detect those mothers who have had multiple G1 pregnancies. This variable is now located within the mothers cohort profile file (MZ). 
  
 
-# alspac 22/08/2022
+# alspac 0.36.0
 
 MRI_YP 
 
@@ -185,19 +212,19 @@ COVID5_YP_2a, COVID5_Mum_2a and COVID5_G0Partner_2a
 
 * Updates to Yes/No labels and lower cutpoints added for EPDS and SMF scores for men.
 
-# alspac 03/08/2022
+# alspac 0.35.0
 
 COVID6
 
 * This is the latest set of questions relating to COVID for G0 and G1 participants collected during 29th April-12th May 2022. This questionnaire was available in online format only. It was one part of a triple data collection along with a second round of antibody testing and CAMCOG cognitive testing – results for both will be announced separately.
 
-# alspac 21/07/2022
+# alspac 0.35.0
 
 COVID5
 
 * This is the latest set of questions relating to COVID for G0 and G1 participants collected during July-December 2021.
 
-# alspac 12/11/2021
+# alspac 0.32.0
 
 Child-based Deprivation Indices & urban/rural status
 
@@ -207,7 +234,7 @@ Serology 2 dataset
 
 * This is the results of the second serology test sent out between 9-11th April 2021. Data note with further details is available here: https://wellcomeopenresearch.org/articles/6-283
 
-# alspac 10/06/2020
+# alspac 0.27.0
 
 COVID questionnaire data now available
 
@@ -216,7 +243,7 @@ COVID questionnaire data now available
 * COVID1_YP_1a - D1472_COVID1_YP - The G1 YP's COVID1 questionnaire data (459 variables).
 * COVID1_YPpartner_1a - D1473_COVID1_YPP - The G1 YP's partner's COVID1 questionnaire data (459 variables). Note that this dataset is not openly available due to low n, but researchers can request it - Please contact ALSPAC if you are interested in using this data.
 
-# alspac 07/08/2018
+# alspac 0.14.0
 
 Updates have been made to the following variable collections
 
@@ -228,7 +255,7 @@ Updates have been made to the following variable collections
 * ta_2a
 * tc_2a
 
-# 11/05/2018
+# alspac 0.12.0
 
 Updates have been made to the following variable collections
 
@@ -237,7 +264,7 @@ Updates have been made to the following variable collections
 * Father_metabolomics_1a
 * mum_metabolomics_2a
 
-# alspac 25/04/2018
+# alspac 0.10.1
 
 Updates have been made to the following variable collections
 
@@ -247,7 +274,7 @@ Updates have been made to the following variable collections
 * Focus 10
 * Focus 11
 
-# alpsac 29/12/2017
+# alspac 0.9.0
 
 Welcome
 

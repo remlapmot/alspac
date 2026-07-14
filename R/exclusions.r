@@ -18,21 +18,19 @@ removeExclusions <- function(x, dictionary) {
   ## obtain alns for individuals that have withdrawn consent
   withdrawals <- readExclusions()
 
-  #Below list from extractvars.R but better off in list 
-  # coreFilters <- function(return list c(x,y,z))
-  # motherFilters <- etc/
-  # childFilters <- etc/ 
-  
+  ## id variables, computed variables ("alnqlet", "in_*") and the core
+  ## participant filter variables added by extractVarsCore()
+  ## (see core.filters in extractvars.r) are exempt from the
+  ## dictionary check below
   exceptions <- c(
-    "aln", "qlet", "alnqlet","preg_in_alsp",                
-    "preg_in_core",                 "preg_enrol_status",            "mum_enrol_status",            
-    "mum_and_preg_enrolled",        "mz005l",                       "mz005m",                      
-    "mz010a",                       "mz013",   "mz014",                       
-    "bestgest",                     "mz028b",  "mum_in_alsp", "mum_in_core",
+    "aln", "qlet", "alnqlet", "preg_in_alsp",
+    "preg_in_core", "preg_enrol_status", "mum_enrol_status",
+    "mum_and_preg_enrolled", "mz005l", "mz005m",
+    "mz010a", "mz013", "mz014",
+    "bestgest", "mz028b", "mum_in_alsp", "mum_in_core",
     colnames(x)[grepl("^in_", colnames(x))]
   )
-  
-  
+
   ## add variables for identifying core ALSPAC participants
   current <- retrieveDictionary("current")
   current <- current[which(!current$name %in% dictionary$name),]
@@ -40,14 +38,6 @@ removeExclusions <- function(x, dictionary) {
       current[[col]] <- NA
   dictionary <- rbind(dictionary,current)
 
-  ## these variables are computed, ignore them
-  exceptions <- c("alnqlet",colnames(x)[grep("^in_", colnames(x))])
-  
-  ## Debugging step: print column names and dictionary names
-  print("Columns in x:")
-  print(colnames(x))
-  print("Allowed names in dictionary:")
-  print(dictionary$name)
 
   ## check all variables are in the dictionary or are computed variables
   if (!all(colnames(x) %in% c(dictionary$name, exceptions))) {
@@ -136,8 +126,8 @@ addSourcesToDictionary <- function(dictionary, sourcesFile = system.file("extdat
         child_completed=c("aln","qlet","alnqlet","in_alsp","tripquad"))
     if(!all(names(withdrawals) %in% names(keep))) {
         stop(
-            "New exclusion file(s) have been created but are not being handled here:",
-            paste(setdiff(names(withdrawals), names(paths)), collapse=", "))
+            "New exclusion file(s) have been created but are not being handled here: ",
+            paste(setdiff(names(withdrawals), names(keep)), collapse=", "))
     }
 
     sources <- utils::read.csv(sourcesFile, stringsAsFactors=FALSE)
@@ -199,7 +189,7 @@ generateSourcesSpreadsheet <- function() {
     paths <- getPaths()
     if(!all(names(withdrawals) %in% names(paths))) {
         stop(
-            "New exclusion file(s) have been created but are not being handled here":
+            "New exclusion file(s) have been created but are not being handled here: ",
             paste(setdiff(names(withdrawals), names(paths)), collapse=", "))
     }
 

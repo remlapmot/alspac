@@ -19,7 +19,7 @@ This function will read that exported list and extract the individual
 level data for each of the selected variables.
 }
 \details{
-More generally, this function requires a file that has at least one 
+More generally, this function requires a file that has at least one
 column with the header 'Variable' followed by a list of variable names.
 
 The R: drive must be mounted and its path set with the \code{setDataDir} function.

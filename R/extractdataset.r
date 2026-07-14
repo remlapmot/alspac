@@ -19,8 +19,8 @@
 #' library(alspac)
 #' setDataDir("R:/Data")
 #' dat <- extractDataset(
-#'          variable_file="ACEHDBFG.txt",
-#'          cid_file="Vars_from_Explore.csv",
+#'          variable_file="Vars_from_Explore.csv",
+#'          cid_file="ACEHDBFG.txt",
 #'          output_format="sav",
 #'          b_number="B0001",
 #'          author="Smith")

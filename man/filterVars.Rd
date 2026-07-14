@@ -11,11 +11,11 @@ filterVars(x, ...)
 
 \item{...}{Filter terms.  The name corresponds to the variable
 name for which to remove duplicates.  Each term is a named vector
-whose names correspond to columns in `x`.
+whose names correspond to columns in \code{x}.
 The values provide patterns for the given column to match.}
 }
 \value{
-The subset of `x` that satisfies the supplied filters
+The subset of \code{x} that satisfies the supplied filters
 or that were not provided a filter.
 }
 \description{
@@ -31,8 +31,8 @@ to select among these duplicates.
 varnames <- c("kz021","kz011b","ype9670", "c645a")
 vars <- findVars(varnames)
 vars <- subset(vars, subset=tolower(name) \%in\% varnames)
-vars <- filterVars(vars, kz021=c(obj="^kz"), 
-                   kz011b=c(obj="^cp", lab="Participant"), 
-                   c645a=c(cat2="Quest"))
+vars <- filterVars(vars, kz021=c(obj="^cp"),
+                   kz011b=c(obj="^cp", lab="Participant"),
+                   c645a=c(cat2="quest"))
 }
 }
