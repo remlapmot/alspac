@@ -178,7 +178,7 @@ The data directory has been recognised
 Sometimes this might not work - the package tries to guess where the R drive will be mounted but it might guess wrong. If I receive an error message instead, then I need to specify the location of the R drive manually:
 
 ```r
-setDataDir("/path/to/R drive/data/") ## e.g. setDataDir("//ads.bris.ac.uk/filestore/SSCM ALSPAC/Data")
+setDataDir("/path/to/R drive/data/") 
 ```
 
 Once I have received the message `The data directory has been recognised`, I am able to extract the variables I need from the R drive.
